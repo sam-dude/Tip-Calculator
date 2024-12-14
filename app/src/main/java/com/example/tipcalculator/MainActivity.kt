@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -35,9 +36,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.tipcalculator.ui.theme.TipCalculatorTheme
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Switch
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.sp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,23 +73,18 @@ fun TipTimeLayout(){
     Column(
         modifier = Modifier
             .statusBarsPadding()
-            .padding(horizontal = 40.dp)
+            .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
             .safeDrawingPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = stringResource(R.string.calculate_tip),
-            modifier = Modifier
-                .padding(bottom = 16.dp, top = 40.dp)
-                .align(alignment = Alignment.Start)
-        )
         EditNumberField(
             label = R.string.bill_amount,
             value = amountInput,
             onValueChange = { amountInput = it },
-            modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth(),
+            placeholder = "00.00",
+            modifier = Modifier.padding(vertical = 42.dp).fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next
@@ -92,17 +94,18 @@ fun TipTimeLayout(){
             label = R.string.how_was_the_service,
             value = tipInput,
             onValueChange = { tipInput = it },
-            modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth(),
+            placeholder = "0%",
+            modifier = Modifier.padding(bottom = 42.dp).fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done
             )
         )
-        RoundUpRow(
-            roundUp = roundUp,
-            onRoundUpChanged = { roundUp = it },
-            modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth().wrapContentWidth(Alignment.End)
-        )
+//        RoundUpRow(
+//            roundUp = roundUp,
+//            onRoundUpChanged = { roundUp = it },
+//            modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth().wrapContentWidth(Alignment.End)
+//        )
         Text(
             text = stringResource(R.string.tip_amount, tip),
             style = MaterialTheme.typography.displaySmall
@@ -113,22 +116,53 @@ fun TipTimeLayout(){
 
 //reusables
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditNumberField(
     @StringRes label: Int,
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    keyboardOptions: KeyboardOptions
+    keyboardOptions: KeyboardOptions,
+    placeholder: String,
 ){
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = modifier,
-        label = { Text(stringResource(label)) },
-        singleLine = true,
-        keyboardOptions = keyboardOptions
-    )
+    Column(modifier = modifier) {
+        Text(
+            text = stringResource(id = label),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        TextField(
+            value = value,
+            onValueChange = onValueChange,
+            placeholder = {
+                Text(
+                    text = placeholder,
+                    style = TextStyle(
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray
+                    )
+                )
+            },
+            singleLine = true,
+            keyboardOptions = keyboardOptions,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Transparent)
+            ,
+            textStyle = TextStyle(
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold
+            ),
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            )
+        )
+    }
 }
 
 @Composable
